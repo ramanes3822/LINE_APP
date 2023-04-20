@@ -41,13 +41,18 @@
         const phoneNumber = document.getElementById('phone-number').value;
         const fullPhoneNumber = countryCode + phoneNumber;
 
-        const formData = new FormData(form);
-        //update value of phone number in formData
-        formData.set('phone-number', fullPhoneNumber);
-        
+        const formData = {
+          'coupon-id': form.elements['coupon-id'].value,
+          'phone-number': fullPhoneNumber,
+          'type': 'redeem_request'
+        }
+
         const reponse = await fetch(form.action, {
           method: 'POST',
-          body: formData
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
         });
         const responseData = await reponse.json();
         
@@ -59,11 +64,7 @@
           responseMessage.style.color = "blue";
           await new Promise(resolve => setTimeout(resolve, 1000));
           
-          //concatenate phone number and country code
-          const countryCode = document.getElementById('country-code').value;
-          const phoneNumber = document.getElementById('phone-number').value;
-          const phoneNumberWithCountryCode = countryCode + phoneNumber;
-          const redirectURL = 'https://line.me/R/oaMessage/'+chanelId+'/?Kindly%20"PRESS"%20send%20to%20register%20your%20Device%0A[PhoneNum:' +phoneNumberWithCountryCode+',%0AMode:Register]';
+          const redirectURL = 'https://line.me/R/oaMessage/'+chanelId+'/?Kindly%20"PRESS"%20send%20to%20register%20your%20Device%0A[PhoneNum:' +fullPhoneNumber+',%0AMode:Register]';
           window.location.href = redirectURL;
         }
         else if(responseData.message === 'coupon_used'){
