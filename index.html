@@ -20,10 +20,10 @@
           <option value="65">Singapore(+65)</option>
           <option value="852">Hong Kong (+852)</option>
           <option value="81">Japan (+81)</option>
+          <option value="60">Malaysia (+60)</option>
         </select>
         <label for="phone-number">Phone number:</label>
         <input type="text" id="phone-number" name="phone-number" placeholder="Enter phone number">
-
         <input type="submit" value="Submit">
       </form>
       <div id="response-message"></div>
@@ -36,6 +36,12 @@
       form.addEventListener('submit', async(event)=>{
         event.preventDefault();
 
+        //concatenate country code and phone number
+        const countryCode = document.getElementById('country-code').value;
+        const phoneNumber = document.getElementById('phone-number').value;
+        const fullPhoneNumber = countryCode + phoneNumber;
+        document.getElementById('phone-number').value = fullPhoneNumber;
+        
         const formData = new FormData(form);
         const reponse = await fetch(form.action, {
           method: 'POST',
