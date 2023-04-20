@@ -40,9 +40,11 @@
         const countryCode = document.getElementById('country-code').value;
         const phoneNumber = document.getElementById('phone-number').value;
         const fullPhoneNumber = countryCode + phoneNumber;
-        document.getElementById('phone-number').value = fullPhoneNumber;
-        
+
         const formData = new FormData(form);
+        //update value of phone number in formData
+        formData.set('phone-number', fullPhoneNumber);
+        
         const reponse = await fetch(form.action, {
           method: 'POST',
           body: formData
