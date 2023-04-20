@@ -64,7 +64,8 @@
           responseMessage.style.color = "blue";
           await new Promise(resolve => setTimeout(resolve, 1000));
           
-          const redirectURL = 'https://line.me/R/oaMessage/'+chanelId+'/?Kindly%20"PRESS"%20send%20to%20register%20your%20Device%0A[PhoneNum:' +fullPhoneNumber+',%0AMode:Register]';
+          const redirectURL = 'https://line.me/R/oaMessage/'+chanelId+'/?Kindly%20"PRESS"%20send%20to%20register%20your%20Device%0A%5BPhoneNum:' +fullPhoneNumber+',%0AMode:Register%5D';
+    
           window.location.href = redirectURL;
         }
         else if(responseData.message === 'coupon_used'){
