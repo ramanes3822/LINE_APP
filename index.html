@@ -29,6 +29,15 @@
       <div id="response-message"></div>
     </div>
     <script>
+      const params = new URLSearchParams(window.location.search);
+      const couponId = params.get('coupon-id');
+      const phoneNumber = params.get('phone-number');
+
+      if(phoneNumber){
+        const form = document.getElementById('register-form')
+        form.elements['phone-number'].value = phoneNumber;
+      }
+
       const form = document.getElementById('register-form')
       const responseMessage = document.getElementById('response-message')
       const chanelId = '@384eqggz';
