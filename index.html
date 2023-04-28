@@ -11,9 +11,8 @@
     <div class="banner">
       <img src="assets/1738.jpg" alt="banner image">
     </div>
-    <div class="rewards-text"><p>Submit to get rewards</p></div>
     <div class="form-container">
-      <form id="register-form" action="https://6ce6-175-139-147-209.ngrok-free.app/api/smart-engage/post/get-rewards-line" method="post">
+      <form id="register-form">
         <input type="hidden" name="coupon-id" value="569">
         <label for="country-code">Country code:</label>
         <select id="country-code" name="country-code">
@@ -24,74 +23,50 @@
         </select>
         <label for="phone-number">Phone number:</label>
         <input type="text" id="phone-number" name="phone-number" placeholder="Enter phone number">
-        <input type="submit" value="Submit">
+        <input id="submitButton" type="submit" value="Submit">
       </form>
       <div id="response-message"></div>
     </div>
     <script>
+      const form = document.getElementById('register-form')
+      const responseMessage = document.getElementById('response-message')
+      const chanelId = '@384eqggz';
+
       const params = new URLSearchParams(window.location.search);
       const countryCode = params.get('country-code');
       const couponId = params.get('coupon-id');
       const phoneNumber = params.get('phone-number');
-      const userStatus = params.get('user');
+      const userStatus = params.get('user-status');
 
-      if(countryCode && phoneNumber){
+      if (userStatus == 'not_registered') {
+        responseMessage.textContent = "You have not registered yet!, please click submit to connect and get your coupon";
+        responseMessage.style.color = "blue";
+      }
+      if (userStatus == 'coupon_submitted') {
+        //hide form
+        form.style.display = "none";
+        responseMessage.textContent = "coupon has been submitted please check your line app for the coupon status";
+        responseMessage.style.color = "green";
+      }
+
+      if (countryCode && phoneNumber) {
         const form = document.getElementById('register-form')
         form.elements['country-code'].value = countryCode;
         form.elements['phone-number'].value = phoneNumber;
       }
 
-
-      const form = document.getElementById('register-form')
-      const responseMessage = document.getElementById('response-message')
-      const chanelId = '@384eqggz';
-
-      form.addEventListener('submit', async(event)=>{
+      form.addEventListener('submit', async (event) => {
         event.preventDefault();
-
         //concatenate country code and phone number
         const countryCode = document.getElementById('country-code').value;
         const phoneNumber = document.getElementById('phone-number').value;
         const fullPhoneNumber = countryCode + phoneNumber;
 
-        const formData = {
-          'coupon-id': form.elements['coupon-id'].value,
-          'phone-number': fullPhoneNumber,
-          'type': 'redeem_request'
-        }
+        const redirectURL = 'https://line.me/R/oaMessage/' + chanelId + '/?Kindly%20"PRESS"%20send%20to%20register%20your%20Device%0A%5BPhoneNum:' + fullPhoneNumber + ',%0AMode:Register%5D';
 
-        const reponse = await fetch(form.action, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(formData)
-        });
-        const responseData = await reponse.json();
-        
-        //redirect to another page if response is not_registered
-      
-        if(responseData.message === 'not_registered'){
-          console.log(responseData.message)
-          responseMessage.textContent = "You have not registered yet!, we will redirect to your line account to register";
-          responseMessage.style.color = "blue";
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          
-          const redirectURL = 'https://line.me/R/oaMessage/'+chanelId+'/?Kindly%20"PRESS"%20send%20to%20register%20your%20Device%0A%5BPhoneNum:' +fullPhoneNumber+',%0AMode:Register%5D';
-    
-          window.location.href = redirectURL;
-        }
-        else if(responseData.message === 'coupon_used'){
-          responseMessage.textContent = "You have already used this coupon!";
-        }
-        else if(responseData.message === 'success'){
-          responseMessage.textContent = "You have successfully redeemed the coupon!";
-        }
-        else{
-          responseMessage.textContent = "Something went wrong!";
-          responseMessage.style.color = "red";
-        }
-      })
+        window.location.href = redirectURL;
+      }
+      )
     </script>
 
   </body>
