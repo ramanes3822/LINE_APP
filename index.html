@@ -27,32 +27,52 @@
       </form>
       <div id="response-message"></div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/fernet@0.4.0/fernetBrowser.min.js"></script>
     <script>
-      const form = document.getElementById('register-form')
-      const responseMessage = document.getElementById('response-message')
+      const form = document.getElementById('register-form');
+      const responseMessage = document.getElementById('response-message');
       const chanelId = '@384eqggz';
 
       const params = new URLSearchParams(window.location.search);
-      const countryCode = params.get('country-code');
-      const couponId = params.get('coupon-id');
-      const phoneNumber = params.get('phone-number');
-      const userStatus = params.get('user-status');
 
-      if (userStatus == 'not_registered') {
-        responseMessage.textContent = "You have not registered yet!, please click submit to connect and get your coupon";
-        responseMessage.style.color = "blue";
-      }
-      if (userStatus == 'coupon_submitted') {
-        //hide form
-        form.style.display = "none";
-        responseMessage.textContent = "coupon has been submitted please check your line app for the coupon status";
-        responseMessage.style.color = "green";
-      }
+      // Get the encrypted query string and key from the response
+      const encryptedQueryString = params.get('data');
+      const key = params.get('key');
 
-      if (countryCode && phoneNumber) {
-        const form = document.getElementById('register-form')
-        form.elements['country-code'].value = countryCode;
-        form.elements['phone-number'].value = phoneNumber;
+      if (encryptedQueryString && key) {
+        try {
+          const secret = new fernet.Secret(key);
+          var token = new fernet.Token({ secret: secret, token: encryptedQueryString, ttl: 0 });
+          var decryptedQueryString = token.decode();
+
+          const queryParams = new URLSearchParams(decryptedQueryString);
+
+          const countryCode = queryParams.get('country-code');
+          const couponId = queryParams.get('coupon-id');
+          const phoneNumber = queryParams.get('phone-number');
+          const userStatus = queryParams.get('user-status');
+
+          if (userStatus == 'not_registered') {
+            responseMessage.textContent = "You have not registered yet!, please click submit to connect and get your coupon";
+            responseMessage.style.color = "blue";
+          }
+          if (userStatus == 'coupon_submitted') {
+            //hide form
+            form.style.display = "none";
+            responseMessage.textContent = "coupon has been submitted please check your line app for the coupon status";
+            responseMessage.style.color = "green";
+          }
+
+          if (countryCode && phoneNumber) {
+            form.elements['country-code'].value = countryCode;
+            form.elements['phone-number'].value = phoneNumber;
+          }
+
+        } catch (error) {
+          form.style.display = "none";
+          responseMessage.textContent = "Invalid URL";
+          responseMessage.style.color = "red";
+        }
       }
 
       form.addEventListener('submit', async (event) => {
