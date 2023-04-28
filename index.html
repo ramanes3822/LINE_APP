@@ -30,13 +30,16 @@
     </div>
     <script>
       const params = new URLSearchParams(window.location.search);
+      const countryCode = params.get('country-code');
       const couponId = params.get('coupon-id');
       const phoneNumber = params.get('phone-number');
 
-      if(phoneNumber){
+      if(countryCode && phoneNumber){
         const form = document.getElementById('register-form')
+        form.elements['country-code'].value = countryCode;
         form.elements['phone-number'].value = phoneNumber;
       }
+
 
       const form = document.getElementById('register-form')
       const responseMessage = document.getElementById('response-message')
